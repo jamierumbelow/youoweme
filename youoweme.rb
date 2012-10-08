@@ -29,8 +29,8 @@ post '/prompt' do
 
   @p = Prompt.new params[:prompt]
   
-  @p.stripe_publishable_key = Encryptor.encrypt(session[:stripe_publishable_key], :key => ENV['STRIPE_SECRET'])
-  @p.stripe_access_token = Encryptor.encrypt(session[:access_token], :key => ENV['STRIPE_SECRET'])
+  @p.stripe_publishable_key = session[:stripe_publishable_key]
+  @p.stripe_access_token = session[:access_token]
   @p.token = rand(36**8).to_s(36)
 
   @p.save
@@ -47,9 +47,25 @@ get '/pay/:token' do
   @p = Prompt.first token: params[:token]
   raise Sinatra::NotFound unless @p
 
-  
-
   erb :pay
+end
+
+post '/pay/:token' do
+  @p = Prompt.first token: params[:token]
+  @amount = @p.amount * 100
+
+  Stripe::Charge.create(
+    :amount      => @amount,
+    :card        => params[:stripeToken],
+    :description => 'Sinatra Charge',
+    :currency    => 'usd'
+  )
+
+  redirect to '/success/paid'
+end
+
+error Stripe::CardError do
+  env['sinatra.error'].message
 end
 
 # ----------------------------------------
@@ -57,7 +73,7 @@ end
 # ----------------------------------------
 
 post '/login' do
-  redirect @client.auth_code.authorize_url
+  redirect @client.auth_code.authorize_url scope: 'read_write'
 end
 
 get '/callback' do
@@ -107,6 +123,22 @@ class Prompt
 
   before :create do
     created_at = DateTime.now
+  end
+
+  def stripe_publishable_key
+    @stripe_pk ||= super ? Encryptor.decrypt(super, :key => ENV['STRIPE_SECRET']) : nil
+  end
+
+  def stripe_publishable_key= new_str
+    super Encryptor.encrypt(new_str, :key => ENV['STRIPE_SECRET'])
+  end
+
+  def stripe_access_token
+    @stripe_at ||= super ? Encryptor.decrypt(super, :key => ENV['STRIPE_SECRET']) : nil
+  end
+
+  def stripe_access_token= new_str
+    super Encryptor.encrypt(new_str, :key => ENV['STRIPE_SECRET'])
   end
 end
 
