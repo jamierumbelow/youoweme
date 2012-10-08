@@ -11,6 +11,8 @@ require 'oauth2'
 require 'stripe'
 require 'data_mapper'
 require 'dm-migrations'
+require 'pony'
+require 'encryptor'
 
 enable :sessions
 
@@ -25,11 +27,29 @@ end
 post '/prompt' do
   redirect '/' unless authenticated?
 
-  p = Prompt.new params[:prompt]
-  p.stripe_id = Stripe::Account.retrieve.id
-  p.save
+  @p = Prompt.new params[:prompt]
+  
+  @p.stripe_publishable_key = Encryptor.encrypt(session[:stripe_publishable_key], :key => ENV['STRIPE_SECRET'])
+  @p.stripe_access_token = Encryptor.encrypt(session[:access_token], :key => ENV['STRIPE_SECRET'])
+  @p.token = rand(36**8).to_s(36)
+
+  @p.save
+
+  Pony.mail to: @p.their_email,
+            from: @p.your_email,
+            subject: "You owe #{@p.your_name}",
+            html_body: erb(:email, layout: false)
 
   redirect to '/success'
+end
+
+get '/pay/:token' do
+  @p = Prompt.first token: params[:token]
+  raise Sinatra::NotFound unless @p
+
+  
+
+  erb :pay
 end
 
 # ----------------------------------------
@@ -43,7 +63,9 @@ end
 get '/callback' do
   @access_token = @client.auth_code.get_token params[:code], 
     :headers => {'Authorization' => "Bearer #{ENV['STRIPE_API_SECRET']}"}
+  
   session[:access_token] = @access_token.token
+  session[:stripe_publishable_key] = @access_token.params["stripe_publishable_key"]
 
   redirect to('/')
 end
@@ -68,8 +90,10 @@ end
 class Prompt
   include DataMapper::Resource
 
-  property :id,         Serial
-  property :stripe_id,  String
+  property :id,                     Serial
+  property :token,                  String
+  property :stripe_publishable_key, Binary
+  property :stripe_access_token,    Binary
 
   %w{name email}.each do |w|
     property :"their_#{w}", String
@@ -84,10 +108,6 @@ class Prompt
   before :create do
     created_at = DateTime.now
   end
-
-  after :create do
-
-  end
 end
 
 # ----------------------------------------
@@ -95,6 +115,7 @@ end
 # ----------------------------------------
 
 before do
+  DataMapper::Logger.new($stdout, :debug)
   DataMapper.setup(:default, ENV['DATABASE_URL'])
   DataMapper.finalize
   DataMapper.auto_upgrade!

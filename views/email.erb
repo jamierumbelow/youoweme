@@ -1,0 +1,6 @@
+<p>Dearest <%= @p.their_name %>,</p>
+<p>This is simply a friendly reminder that on <%= @p.date %> I lent you the princely sum of $<%= @p.amount %> - for <%= @p.what %> - and would rather much like it back (as we previously agreed you would).</p>
+<p>Since we are such close friends, I'm making it easy for you to pay me through the following link:</p>
+<p><%= url "/pay/#{@p.token}" %></p>
+<p>Kind regards,</p>
+<p><%= @p.your_name %></p>

@@ -9,3 +9,6 @@ gem "stripe"
 gem "data_mapper"
 gem "dm-mysql-adapter"
 gem "dm-postgres-adapter"
+gem "encryptor"
+
+gem "pony"
