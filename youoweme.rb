@@ -9,7 +9,8 @@ require 'sinatra'
 require 'sinatra/reloader' if development?
 require 'oauth2'
 require 'stripe'
-require 'yaml'
+require 'data_mapper'
+require 'dm-migrations'
 
 enable :sessions
 
@@ -22,10 +23,14 @@ get '/' do
 end
 
 post '/prompt' do
-  prompt = params[:prompt]
+  redirect '/' unless authenticated?
+
+  p = Prompt.new params[:prompt]
+  p.stripe_id = Stripe::Account.retrieve.id
+  p.save
+
+  redirect to '/success'
 end
-
-
 
 # ----------------------------------------
 # oAuth Framework
@@ -57,9 +62,40 @@ before do
 end
 
 # ----------------------------------------
+# Models
+# ----------------------------------------
+
+class Prompt
+  include DataMapper::Resource
+
+  property :id,         Serial
+  property :stripe_id,  String
+
+  %w{name email}.each do |w|
+    property :"their_#{w}", String
+    property :"your_#{w}", String
+  end
+  property :amount, Integer
+  property :date, Date
+  property :what, String
+
+  property :created_at, DateTime
+
+  before :create do
+    created_at = DateTime.now
+  end
+
+  after :create do
+
+  end
+end
+
+# ----------------------------------------
 # DB Setup
 # ----------------------------------------
 
 before do
   DataMapper.setup(:default, ENV['DATABASE_URL'])
+  DataMapper.finalize
+  DataMapper.auto_upgrade!
 end
