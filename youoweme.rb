@@ -16,25 +16,26 @@ require 'encryptor'
 
 enable :sessions
 
+# ----------------------------------------
+# It's Hassel Time!
+# ----------------------------------------
+
 get '/' do
-  if authenticated?
-    erb :index
-  else
-    erb :login
-  end
+  erb (authenticated? ? :index : :login)
 end
 
 post '/prompt' do
   redirect '/' unless authenticated?
 
+  # Grab the form data and throw it into the database, alongside the currently
+  # authenticated user's public key and access token
   @p = Prompt.new params[:prompt]
-  
   @p.stripe_publishable_key = session[:stripe_publishable_key]
   @p.stripe_access_token = session[:access_token]
   @p.token = rand(36**8).to_s(36)
-
   @p.save
 
+  # Send out the email, yo
   Pony.mail to: @p.their_email,
             from: @p.your_email,
             subject: "You owe #{@p.your_name}",
@@ -49,6 +50,10 @@ get '/pay/:token' do
 
   erb :pay
 end
+
+# ----------------------------------------
+# Stripe Processing
+# ----------------------------------------
 
 post '/pay/:token' do
   @p = Prompt.first token: params[:token]
@@ -78,10 +83,13 @@ end
 # oAuth Framework
 # ----------------------------------------
 
+# We're being asked to log in with Stripe, so redirect away
 post '/login' do
   redirect @client.auth_code.authorize_url scope: 'read_write'
 end
 
+# The user has logged in. Get the response code, trade it for an access
+# token, store 'em and redirect back to the main page to cause some mayhem
 get '/callback' do
   @access_token = @client.auth_code.get_token params[:code], 
     :headers => {'Authorization' => "Bearer #{ENV['STRIPE_API_SECRET']}"}
@@ -89,9 +97,11 @@ get '/callback' do
   session[:access_token] = @access_token.token
   session[:stripe_publishable_key] = @access_token.params["stripe_publishable_key"]
 
-  redirect to('/')
+  redirect to '/'
 end
 
+# Before each request, establish the session and get the oAuth client,
+# as well as set up Stripe and such.
 before do
   session[:oauth] ||= {}
 
@@ -102,6 +112,7 @@ before do
     Stripe.api_key = session[:access_token]
   end
 
+  # Some small syntax sugar to use in other methods
   def authenticated?; session[:access_token]; end
 end
 
@@ -130,6 +141,11 @@ class Prompt
   before :create do
     created_at = DateTime.now
   end
+
+  # The following are getters and setters for the two encrypted user access
+  # tokens. They're messy, I know. Due to the way Ruby's super works - and my
+  # sub-standard knowledge of DataMapper - I can't DRY this up particularly
+  # well, so I'm leaving it like this... for now...
 
   def stripe_publishable_key
     @stripe_pk ||= super ? Encryptor.decrypt(super, :key => ENV['STRIPE_SECRET']) : nil
@@ -160,9 +176,8 @@ end
 # DB Setup
 # ----------------------------------------
 
-before do
-  DataMapper::Logger.new($stdout, :debug)
-  DataMapper.setup(:default, ENV['DATABASE_URL'])
-  DataMapper.finalize
-  DataMapper.auto_upgrade!
-end
+# Set up DataMapper, finalize the models, get the tables synced!
+DataMapper::Logger.new($stdout, :debug)
+DataMapper.setup(:default, ENV['DATABASE_URL'])
+DataMapper.finalize
+DataMapper.auto_upgrade!
