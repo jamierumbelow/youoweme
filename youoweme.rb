@@ -61,6 +61,12 @@ post '/pay/:token' do
     :currency    => 'usd'
   )
 
+  # Clear out the access token and public key...
+  # don't want to hang onto them any longer then we have to!
+  @p.stripe_publishable_key = nil
+  @p.stripe_access_token = nil
+  @p.save
+
   redirect to '/success/paid'
 end
 
@@ -130,7 +136,11 @@ class Prompt
   end
 
   def stripe_publishable_key= new_str
-    super Encryptor.encrypt(new_str, :key => ENV['STRIPE_SECRET'])
+    if new_str
+      super Encryptor.encrypt(new_str, :key => ENV['STRIPE_SECRET'])
+    else
+      super
+    end
   end
 
   def stripe_access_token
@@ -138,7 +148,11 @@ class Prompt
   end
 
   def stripe_access_token= new_str
-    super Encryptor.encrypt(new_str, :key => ENV['STRIPE_SECRET'])
+    if new_str
+      super Encryptor.encrypt(new_str, :key => ENV['STRIPE_SECRET'])
+    else
+      super
+    end
   end
 end
 
