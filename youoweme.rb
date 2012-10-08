@@ -51,8 +51,8 @@ get '/pay/:token' do
   erb :pay
 end
 
-get '/success' { erb :success }
-get '/success/paid' { erb :success_paid }
+get('/success') { erb :success }
+get('/success/paid') { erb :success_paid }
 
 # ----------------------------------------
 # Stripe Processing
@@ -95,7 +95,7 @@ end
 # token, store 'em and redirect back to the main page to cause some mayhem
 get '/callback' do
   @access_token = @client.auth_code.get_token params[:code], 
-    :headers => {'Authorization' => "Bearer #{ENV['STRIPE_API_SECRET']}"}
+    :headers => {'Authorization' => "Bearer #{ENV['STRIPE_SECRET']}"}
   
   session[:access_token] = @access_token.token
   session[:stripe_publishable_key] = @access_token.params["stripe_publishable_key"]
