@@ -51,6 +51,9 @@ get '/pay/:token' do
   erb :pay
 end
 
+get '/success' { erb :success }
+get '/success/paid' { erb :success_paid }
+
 # ----------------------------------------
 # Stripe Processing
 # ----------------------------------------
