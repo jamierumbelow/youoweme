@@ -15,3 +15,4 @@ gem "pony"
 
 gem "sprockets"
 gem "sass"
+gem "coffee-script"
