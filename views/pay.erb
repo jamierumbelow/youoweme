@@ -1,12 +1,17 @@
-<h2>
-	You owe <%= @p.your_name %>
-	$<%= @p.amount %>
-	<% if @p.what %>for <%= @p.what %><% end %>
-</h2>
+<div class="row">
+	<div class="eight columns centered" style="margin-top:-30px">
+		<hr>
 
-<p>
-	<form action="/pay/<%= @p.token %>" method="post">
-    	<script src="https://button.stripe.com/v1/button.js" class="stripe-button"
+		<p>
+			You owe your friend, <%= @p.your_name %>, $<%= @p.amount %>
+			<% if @p.what %>for <%= @p.what %><% end %>. And we'll make it nice and easy to pay him! Click on the button below to load a safe and secure form to pay him directly.
+		</p>
+
+		<p>
+			<form action="/pay/<%= @p.token %>" method="post" style="width:132px;margin:0 auto">
+    			<script src="https://button.stripe.com/v1/button.js" class="stripe-button"
         	    data-key="<%= @p.stripe_publishable_key %>"></script>
-   	</form>
-</p>
+   			</form>
+		</p>
+	</div>
+</div>

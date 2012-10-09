@@ -11,13 +11,19 @@
 
 	<body>
 		<div class="row">
-			<header class="four columns centered">
-				<h1><a href="/">You Owe Me</a></h1>
+			<header class="<%= @title ? 'seven' : 'four' %> columns centered">
+				<h1><a href="/"><%= @title || "You Owe Me" %></a></h1>
 			</header>
 		</div>
 
 		<div id="container" class="row">
 			<%= yield %>
+		</div>
+
+		<div class="row">
+			<footer class="eight columns centered">
+				<p>Copyright (c)2012 Jamie Rumbelow - Powered by Stripe - Get the source code on GitHub</p>
+			</footer>
 		</div>
 	</body>
 </html>

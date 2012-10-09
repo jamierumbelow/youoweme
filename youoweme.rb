@@ -47,6 +47,7 @@ end
 get '/pay/:token' do
   @p = Prompt.first token: params[:token]
   raise Sinatra::NotFound unless @p
+  @title = "You Owe #{@p.your_name}"
 
   erb :pay
 end
