@@ -12,3 +12,6 @@ gem "dm-postgres-adapter"
 gem "encryptor"
 
 gem "pony"
+
+gem "sprockets"
+gem "sass"

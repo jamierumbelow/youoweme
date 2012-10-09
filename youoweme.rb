@@ -21,7 +21,7 @@ enable :sessions
 # ----------------------------------------
 
 get '/' do
-  erb (authenticated? ? :index : :login)
+  erb (authenticated? ? :index : :login), layout: !authenticated?.nil?
 end
 
 post '/prompt' do
