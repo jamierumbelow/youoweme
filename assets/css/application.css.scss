@@ -1,6 +1,6 @@
 body
 {
-	// background: #E8EBEF;
+	
 }
 
 .container
@@ -21,5 +21,119 @@ body
 	form
 	{
 		margin-top: 25px;
+	}
+}
+
+header
+{
+	border-bottom: 1px solid #CCC;
+
+	h1
+	{
+		text-align: center;
+		margin: 40px 0;
+	}
+}
+
+#container
+{
+	form#form
+	{
+		#paper
+		{
+		    background: #f6f6f6;  
+		    border: 1px solid #bbb;  
+		    height: 500px;
+		    padding: 15px;
+		    position: relative;
+		    
+		    -webkit-box-shadow: 0 0 3px rgba(0,0,0,.2);  
+		    -moz-box-shadow: 0 0 3px rgba(0,0,0,.2);  
+		    box-shadow: 0 0 3px rgba(0,0,0,.2);  
+		              
+		    -webkit-border-radius: 3px;  
+		    -moz-border-radius: 3px;  
+		    border-radius: 3px;
+
+		    p
+		    {
+		    	line-height: 2;
+		    	margin-bottom: 30px;
+		    }
+
+		    input
+		    {
+		    	width: 200px;
+		    	display: inline;
+		    	background: none;
+		    	border: 0;
+		    	border-bottom: 1px dotted black;
+
+		    	-webkit-box-shadow: none;
+		    	-moz-box-shadow: none;
+		    	box-shadow: none;
+		    }
+
+		    :after, :before
+		    {
+				background: #f6f6f6;
+				border: 1px solid #aaa;
+				bottom: -10px;
+				content: '';
+				height: 250px;
+				left: 4px;
+				position: absolute;
+				width: 614px;
+				z-index: -10;
+				-webkit-box-shadow: 0 0 3px rgba(0,0,0,.1);
+				-moz-box-shadow: 0 0 3px rgba(0,0,0,.1);
+				box-shadow: 0 0 3px rgba(0,0,0,.1);
+
+				-webkit-border-radius: 3px;
+				-moz-border-radius: 3px;
+				border-radius: 3px;
+			}
+
+			:before
+			{
+				bottom: -18px;
+				left: 10px;
+				width: 602px;
+				-webkit-border-radius: 3px;
+				-moz-border-radius: 3px;
+				border-radius: 3px;
+			}
+		}
+
+		#actions
+		{
+			background: #f6f6f6;
+		    border: 1px solid #bbb;  
+		    height: 490px;
+		    padding: 15px;
+		    position: relative;
+		    top: 5px;
+		    left: -5px;
+		    z-index: -2;
+		    
+		    -webkit-box-shadow: 0 0 3px rgba(0,0,0,.2);  
+		    -moz-box-shadow: 0 0 3px rgba(0,0,0,.2);  
+		    box-shadow: 0 0 3px rgba(0,0,0,.2);  
+		              
+		    -webkit-border-radius: 3px;  
+		    -moz-border-radius: 3px;  
+		    border-radius: 3px;
+
+		    input[type="submit"]
+		    {
+		    	width: 100%;
+		    }
+
+		    p.meta
+		   	{
+		   		margin-top:190px;
+		   		font-size: 0.8em;
+		   	}
+		}
 	}
 }
