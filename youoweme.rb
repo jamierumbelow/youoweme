@@ -15,7 +15,6 @@ require 'pony'
 require 'encryptor'
 
 enable :sessions
-ENV['DATABASE_URL'] = ENV['HEROKU_POSTGRESQL_AMBER_URL'] if ENV['RACK_ENV'] == 'production'
 
 # ----------------------------------------
 # It's Hassel Time!
