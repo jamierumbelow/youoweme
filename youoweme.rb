@@ -187,7 +187,7 @@ end
 # ----------------------------------------
 
 # Set up DataMapper, finalize the models, get the tables synced!
-DataMapper::Logger.new($stdout, :debug) unless ENV['RACK_ENV'] == 'production'
+DataMapper::Logger.new(STDOUT, :debug)
 DataMapper.setup(:default, ENV['DATABASE_URL'])
 DataMapper.finalize
 DataMapper.auto_upgrade!
