@@ -1,7 +1,7 @@
-# You Owe Me!
+# You Owe Me
 ### A simple way to harrass your friends and family until they pay you
 
-You Owe Me! is a simple Sinatra app and hosted service that allows you to send IOU notifications to friends and family. Your authenticate with Stripe Connect and fill out a basic form; the ower gets an email alerting them and a really simple interface to pay it.
+[You Owe Me](http://youowememoney.heroku.com) is a simple Sinatra app and hosted service that allows you to send IOU notifications to friends and family. Your authenticate with Stripe Connect and fill out a basic form; the ower gets an email alerting them and a really simple interface to pay it. [It's the web app equivalent of this.](http://www.youtube.com/watch?v=ZomwVcGt0LE)
 
 ## Installation
 
