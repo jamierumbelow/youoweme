@@ -106,6 +106,7 @@ get '/callback' do
   
   session[:access_token] = @access_token.token
   session[:stripe_publishable_key] = @access_token.params["stripe_publishable_key"]
+  Stripe.api_key = @access_token.token
   session[:account_email] = Stripe::Account.retrieve.email
 
   redirect to '/'
