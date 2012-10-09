@@ -100,6 +100,7 @@ end
 # The user has logged in. Get the response code, trade it for an access
 # token, store 'em and redirect back to the main page to cause some mayhem
 get '/callback' do
+  redirect to '/' if params[:error]
   @access_token = @client.auth_code.get_token params[:code], 
     :headers => {'Authorization' => "Bearer #{ENV['STRIPE_SECRET']}"}
   
