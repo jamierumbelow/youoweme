@@ -91,6 +91,11 @@ post '/login' do
   redirect @client.auth_code.authorize_url scope: 'read_write'
 end
 
+get '/logout' do
+  session[:access_token] = session[:stripe_publishable_key] = session[:account_email] = nil
+  redirect to '/'
+end
+
 # The user has logged in. Get the response code, trade it for an access
 # token, store 'em and redirect back to the main page to cause some mayhem
 get '/callback' do
